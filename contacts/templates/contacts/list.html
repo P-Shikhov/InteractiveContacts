@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Contact{% endblock %}
+
+{% block content %}
+{% if contacts %}
+    <ul>
+    {% for contact in contacts %}
+        <li><a id="{{ contact.id }}" onClick="showDetails(this.id)">{{ contact.first_name }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    No contacts. 
+{% endif %}
+
+<div id='contactDetail'></div>
+
+<script type="text/javascript">
+    function convert(obj) {
+        Object.keys(obj).forEach(key => console.log(key));
+    };
+
+  function showDetails(contactId){
+    console.log(contactId);
+    fetch(`http://127.0.0.1:8080/contacts/${contactId}`, {
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest',
+        },
+    })
+    .then(response => {
+        // should 500 be processed?
+        return response.json();
+    })
+    .then(data => {
+        // let detailDiv = document.getElementById('contactDetail');
+        // let fragment = document.createDocumentFragment();
+        // for (let i = 0; i < Object.keys(data).length; i++) {
+        //     let p = document.createElement('p');
+        //     p.textContent = `Paragraph ${i}`;
+        //     fragment.appendChild(p);
+        // }
+
+        // div.appendChild(fragment);
+    })
+  }
+</script>
+
+{% endblock content %}
+

@@ -1,0 +1,30 @@
+Why is Multi-table inheritance considered bad?
+CreateView or FormView
+forms.ModelForm or forms.Form : https://stackoverflow.com/questions/16079299/getting-init-got-an-unexpected-keyword-argument-instance-with-createview
+
+<class 'contacts.models.Contact'>
+
+Q:
+Fetch API vs XMLHttpRequest https://stackoverflow.com/questions/35549547/fetch-api-vs-xmlhttprequest
+react and django html
+
+td:
+listview of contacts
+form and list on the same page
+add N phones and emails
+Date born: <= now
+
+hilight fields that have err input
+write tests for a form
+
+
+done:
+date_born - date chooser https://stackoverflow.com/questions/3367091/whats-the-cleanest-simplest-to-get-running-datepicker-in-django
+message that c. has been created on the same page and clear the form - https://tech.serhatteker.com/post/2020-11/show-success-message-in-cbv-django/
+
+
+testing:
+test only your code, not that of framework/language: https://stackoverflow.com/questions/9574810/writing-test-cases-for-django-models
+
+other:
+html disappear text - https://bytes.com/topic/javascript/answers/548966-make-div-disappear-after-few-seconds
