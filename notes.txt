@@ -21,7 +21,7 @@ write tests for a form
 done:
 date_born - date chooser https://stackoverflow.com/questions/3367091/whats-the-cleanest-simplest-to-get-running-datepicker-in-django
 message that c. has been created on the same page and clear the form - https://tech.serhatteker.com/post/2020-11/show-success-message-in-cbv-django/
-
+CreateView and ListView: https://stackoverflow.com/questions/9338181/django-mixing-listview-and-createview
 
 testing:
 test only your code, not that of framework/language: https://stackoverflow.com/questions/9574810/writing-test-cases-for-django-models

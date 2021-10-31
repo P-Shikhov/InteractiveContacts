@@ -16,5 +16,12 @@
             {{ message|safe }}
         </div>
     {% endfor %}
-{% endif %}
+  {% endif %}
+
+  <script>
+    {% comment %} console.log("{{object_list}}"); {% endcomment %}
+    {% for item in object_list %}
+        console.log( "{{ item.id }}" );
+    {% endfor %}
+  </script>
 {% endblock %}

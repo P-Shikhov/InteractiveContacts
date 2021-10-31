@@ -16,6 +16,11 @@ class ContactCreationView(SuccessMessageMixin, generic.CreateView):
     success_url = reverse_lazy('contacts:new')
     success_message = "Contact created!"
 
+    def get_context_data(self, **kwargs):
+        context = super(ContactCreationView, self).get_context_data(**kwargs)
+        context['object_list'] = Contact.objects.all()
+        return context
+
 def home(request):
     return HttpResponse('Home')
 

@@ -13,13 +13,9 @@
     No contacts. 
 {% endif %}
 
-<div id='contactDetail'></div>
+<div id='contactDetails'></div>
 
 <script type="text/javascript">
-    function convert(obj) {
-        Object.keys(obj).forEach(key => console.log(key));
-    };
-
   function showDetails(contactId){
     console.log(contactId);
     fetch(`http://127.0.0.1:8080/contacts/${contactId}`, {
@@ -33,18 +29,17 @@
         return response.json();
     })
     .then(data => {
-        // let detailDiv = document.getElementById('contactDetail');
-        // let fragment = document.createDocumentFragment();
-        // for (let i = 0; i < Object.keys(data).length; i++) {
-        //     let p = document.createElement('p');
-        //     p.textContent = `Paragraph ${i}`;
-        //     fragment.appendChild(p);
-        // }
-
-        // div.appendChild(fragment);
+        let contactDetails = document.getElementById('contactDetails');
+        let fragment = document.createDocumentFragment();
+        Object.keys(data).forEach(field => {
+            let p = document.createElement('p');
+            p.innerHTML = `${field} - ${data[field]}`;
+            p.setAttribute("id", field);
+            contactDetails.appendChild(p);
+        });
+        detailForm.appendChild(fragment);
     })
   }
 </script>
 
 {% endblock content %}
-

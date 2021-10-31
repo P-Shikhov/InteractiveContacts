@@ -8,14 +8,51 @@
 </head>
 <body>
     <script>
-        const person = {
-            name: "name",
-            surname: "surname",
-        };
+        // document
+        let p = document
+            .createElement('p');
+            document.body.appendChild(p);
+            p.setAttribute("id", "tr00ue");
+        console.log(p);
 
-        const me = Object.create(person);
+        // p
+        //     .setAttribute("id", "fieldset_id")
+        //     .setAttribute("name", "fieldset_name");
 
-        console.log(Object.keys(person).length);
+
+
+        // let p1 = document.createElement('p');
+        // p1.innerHTML = "p1";
+        // p1.setAttribute("id", "p1");
+        // document.body.appendChild(p1);
+        // let p2 = document.getElementById('p1');
+        console.log(p);
+
+        // ---
+        let detailForm = document.getElementById('contactDetail');
+        let fragment = document.createDocumentFragment();
+
+        Object.keys(data).forEach(field => {
+            let fieldset = document.createElement('fieldset');
+            fieldset.setAttribute("disabled", "true");
+            fieldset.setAttribute("id", `${field}_fieldset`);
+            detailForm.appendChild(fieldset);
+            console.log(fieldset);
+
+            let label = document.createElement('label');
+            label.setAttribute("for", field);
+            label.innerHTML = field;
+            fieldset.appendChild(label);
+
+            let input = document.createElement('input');
+            input.setAttribute("type", "text");
+            input.setAttribute("name", field);
+            input.setAttribute("id", field);
+            input.setAttribute("id", field);
+            fieldset.appendChild(input);
+        });
+
+        detailForm.appendChild(fragment);
     </script>
 </body>
 </html>
