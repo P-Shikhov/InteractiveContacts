@@ -3,6 +3,8 @@
 {% block title %}Add Contact{% endblock %}
 
 {% block content %}
+{% include "contacts/include_form.html" with form=ContactCreationForm %}
+
 {% if contacts %}
     <ul>
     {% for contact in contacts %}
@@ -16,8 +18,9 @@
 <div id='contactDetails'></div>
 
 <script type="text/javascript">
+    var currentContact;
   function showDetails(contactId){
-    console.log(contactId);
+    currentContactId = contactId;
     fetch(`http://127.0.0.1:8080/contacts/${contactId}`, {
         headers: {
             'Accept': 'application/json',
@@ -29,16 +32,72 @@
         return response.json();
     })
     .then(data => {
+        currentContact = data;
+        console.log(data);
         let contactDetails = document.getElementById('contactDetails');
         let fragment = document.createDocumentFragment();
         Object.keys(data).forEach(field => {
-            let p = document.createElement('p');
-            p.innerHTML = `${field} - ${data[field]}`;
-            p.setAttribute("id", field);
-            contactDetails.appendChild(p);
+            if (data[field]) {
+                let p = document.createElement('p');
+                p.innerHTML = `${field} - ${data[field]}`;
+                p.setAttribute("id", field);
+                contactDetails.appendChild(p);
+            }
         });
-        detailForm.appendChild(fragment);
+        let editContactButton = document.createElement('button');
+        editContactButton.setAttribute("onclick", "createForm()");
+        editContactButton.innerHTML = "Edit contact";
+        contactDetails.appendChild(editContactButton);
+        // detailForm.appendChild(fragment); ???
     })
+  }
+
+  function createForm() {
+    let contactEditForm = document.createElement('form');
+    contactEditForm.setAttribute('method', 'post');
+    contactEditForm.setAttribute('id', 'contactEditForm');
+    contactEditForm.setAttribute('action', currentContact.id);
+    Object.keys(currentContact).forEach(field => {
+        if (field === "id") {
+            return;
+        }
+        let fieldset = document.createElement('fieldset');
+        fieldset.setAttribute("id", `${field}_fieldset`);
+        contactEditForm.appendChild(fieldset);
+        console.log(fieldset);
+
+        let label = document.createElement('label');
+        label.setAttribute("for", field);
+        label.innerHTML = field;
+        fieldset.appendChild(label);
+
+        let input = document.createElement('input');
+        let inputType;
+        switch (field) {
+            case "date_born":
+                inputType = "date";
+                break;
+            case "phone_number":
+                inputType = "tel";
+                break;
+            case "email":
+                inputType = "email";
+                break;
+            default:
+                inputType = "text";
+        }
+        input.setAttribute("type", inputType);
+        input.setAttribute("value", currentContact[field]);
+        input.setAttribute("name", field);
+        input.setAttribute("id", field);
+        fieldset.appendChild(input);
+    });
+    submitFormButton = document.createElement('button');
+    submitFormButton.setAttribute('form', 'contactEditForm');
+    submitFormButton.setAttribute('onclick', 'updateContact(currentContact.id)');
+    submitFormButton.innerHTML = 'Update Contact';
+    contactEditForm.appendChild(submitFormButton);
+    document.body.appendChild(contactEditForm);
   }
 </script>
 

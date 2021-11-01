@@ -53,6 +53,30 @@
         });
 
         detailForm.appendChild(fragment);
+
+        // ---
+        let form = document.createElement('form');
+    
+    Object.keys(currentContact).forEach(field => {
+        let fieldset = document.createElement('fieldset');
+        fieldset.setAttribute("id", `${field}_fieldset`);
+        detailForm.appendChild(fieldset);
+        console.log(fieldset);
+
+        let label = document.createElement('label');
+        label.setAttribute("for", field);
+        label.innerHTML = field;
+        fieldset.appendChild(label);
+
+        if (field == "")
+
+        let input = document.createElement('input');
+        input.setAttribute("type", "text");
+        input.setAttribute("name", field);
+        input.setAttribute("id", field);
+        input.setAttribute("id", field);
+        fieldset.appendChild(input);
+    });
     </script>
 </body>
 </html>
