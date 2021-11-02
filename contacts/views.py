@@ -1,34 +1,57 @@
-from django.core import serializers
 from django.urls.base import reverse
 from django.views import generic
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse_lazy
-from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect, JsonResponse, Http404
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
-from django.views.generic.edit import ModelFormMixin
-from django.views.decorators.http import require_http_methods
+from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic.edit import FormMixin
+from django.contrib import messages
 
 from .forms import ContactCreationForm
 from .models import Contact
 
-class ContactCreationView(SuccessMessageMixin, generic.CreateView):
-    form_class = ContactCreationForm
-    template_name = 'contacts/add.html'
-    success_url = reverse_lazy('contacts:new')
-    success_message = "Contact created!"
+@require_POST
+def process_contact_creation(request):
+    form = ContactCreationForm(request.POST)
+    if form.is_valid():
+        form.save()
+        messages.success(request, 'Contact Created')
+        return HttpResponseRedirect(reverse('contacts:contact_list'))
+    else:
+        messages.error(request, '{}'.format(form.errors))
+    return HttpResponseRedirect(reverse('contacts:contact_list'))
 
 
-def home(request):
-    return HttpResponse('Home')
-
-class ContactList(generic.ListView):
-# class ContactList(generic.ListView, ModelFormMixin):
+class DashboardView(generic.ListView, FormMixin):
     model = Contact
+    allow_empty = True
     context_object_name = 'contacts'
     template_name = 'contacts/list.html'
     form_class = ContactCreationForm
+
+    def get(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        self.form = self.get_form(form_class)
+
+        self.object_list = self.get_queryset()
+        allow_empty = self.get_allow_empty()
+        if not allow_empty:
+            if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
+                is_empty = not self.object_list.exists()
+            else:
+                is_empty = not self.object_list
+            if is_empty:
+                raise Http404(_('Empty list and “%(class_name)s.allow_empty” is False.') % {
+                    'class_name': self.__class__.__name__,
+                })
+        context = self.get_context_data(object_list=self.object_list, form=self.form)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        self.form = ContactCreationForm(context['prepopulated_form'])
+        return super(DashboardView, self).post(request, *args, **kwargs) 
 
 @csrf_exempt #todo: csrf protection
 @require_http_methods(['GET', 'POST'])
@@ -47,5 +70,3 @@ def contact_details(request, contact_id, **kwargs): #todo: id in url for POST
                 update_values[pair[0]] = pair[1]
         Contact.objects.filter(pk=contact_id).update(**update_values)
         return HttpResponseRedirect(reverse("contacts:contact_list"))
-
-# def update_contact(request):

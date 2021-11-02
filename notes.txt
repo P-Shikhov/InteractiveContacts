@@ -1,18 +1,11 @@
 Why is Multi-table inheritance considered bad?
-CreateView or FormView
-forms.ModelForm or forms.Form : https://stackoverflow.com/questions/16079299/getting-init-got-an-unexpected-keyword-argument-instance-with-createview
-
-<class 'contacts.models.Contact'>
 
 Q:
 Fetch API vs XMLHttpRequest https://stackoverflow.com/questions/35549547/fetch-api-vs-xmlhttprequest
 react and django html
 
 td:
-listview of contacts
-form and list on the same page
 add N phones and emails
-Date born: <= now
 when updating object, check for simult. access https://stackoverflow.com/questions/45225882/updating-a-resource-through-rest-put-post
 
 hilight fields that have err input
@@ -25,6 +18,7 @@ message that c. has been created on the same page and clear the form - https://t
 CreateView and ListView: https://stackoverflow.com/questions/9338181/django-mixing-listview-and-createview
 get urls == put urls https://stackoverflow.com/questions/9265286/including-id-in-uri-for-put-requests/9266399
 no put method in html forms https://stackoverflow.com/questions/8054165/using-put-method-in-html-form 
+Date born: <= now
 
 
 testing:

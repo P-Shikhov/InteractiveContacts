@@ -3,7 +3,18 @@
 {% block title %}Add Contact{% endblock %}
 
 {% block content %}
-{% include "contacts/include_form.html" with form=ContactCreationForm %}
+
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% include "contacts/include_form.html" %}
+
+
 
 {% if contacts %}
     <ul>
@@ -33,8 +44,8 @@
     })
     .then(data => {
         currentContact = data;
-        console.log(data);
         let contactDetails = document.getElementById('contactDetails');
+        contactDetails.innerHTML = "";
         let fragment = document.createDocumentFragment();
         Object.keys(data).forEach(field => {
             if (data[field]) {
@@ -48,11 +59,12 @@
         editContactButton.setAttribute("onclick", "createForm()");
         editContactButton.innerHTML = "Edit contact";
         contactDetails.appendChild(editContactButton);
-        // detailForm.appendChild(fragment); ???
     })
   }
 
   function createForm() {
+    let contactDetails = document.getElementById('contactDetails');
+    contactDetails.innerHTML = "";
     let contactEditForm = document.createElement('form');
     contactEditForm.setAttribute('method', 'post');
     contactEditForm.setAttribute('id', 'contactEditForm');
@@ -97,7 +109,7 @@
     submitFormButton.setAttribute('onclick', 'updateContact(currentContact.id)');
     submitFormButton.innerHTML = 'Update Contact';
     contactEditForm.appendChild(submitFormButton);
-    document.body.appendChild(contactEditForm);
+    contactDetails.appendChild(contactEditForm);
   }
 </script>
 
