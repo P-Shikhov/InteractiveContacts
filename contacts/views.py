@@ -7,10 +7,13 @@ from django.views.decorators.http import require_http_methods, require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.edit import FormMixin
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import ContactCreationForm
 from .models import Contact
 
+@login_required
 @require_POST
 def process_contact_creation(request):
     form = ContactCreationForm(request.POST)
@@ -24,6 +27,7 @@ def process_contact_creation(request):
 
 
 class DashboardView(generic.ListView, FormMixin):
+# class DashboardView(LoginRequiredMixin, generic.ListView, FormMixin):
     model = Contact
     allow_empty = True
     context_object_name = 'contacts'
@@ -53,13 +57,14 @@ class DashboardView(generic.ListView, FormMixin):
         self.form = ContactCreationForm(context['prepopulated_form'])
         return super(DashboardView, self).post(request, *args, **kwargs) 
 
+
+@login_required
 @csrf_exempt #todo: csrf protection
-@require_http_methods(['GET', 'POST'])
 def contact_details(request, contact_id, **kwargs): #todo: id in url for POST
     if (request.method == 'GET'):
         contact = get_object_or_404(Contact, pk=contact_id)
         return JsonResponse(model_to_dict(contact))
-    else: # POST
+    elif (request.method == 'POST'):
         allowed_fields = [field.name for field in Contact._meta.get_fields()]
         allowed_fields.remove('id')
         request_body = request.body.decode('utf-8')
@@ -68,5 +73,10 @@ def contact_details(request, contact_id, **kwargs): #todo: id in url for POST
             pair = pair.split("=")
             if pair[1] and pair[0] in allowed_fields:
                 update_values[pair[0]] = pair[1]
-        Contact.objects.filter(pk=contact_id).update(**update_values)
+        contact_to_be_updated = Contact.objects.filter(pk=contact_id)
+        if len(contact_to_be_updated) == 1 and contact_to_be_updated[0].user.id == request.user.id:
+        # if contact_to_be_updated.id == request.user.id:
+            contact_to_be_updated.update(**update_values)
+        else:
+            messages.error(request, 'Permission denied.')
         return HttpResponseRedirect(reverse("contacts:contact_list"))

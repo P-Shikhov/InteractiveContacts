@@ -5,7 +5,7 @@ from django.contrib import admin
 from .models import Contact
 
 class ContactAdmin(admin.ModelAdmin):
-    list_display = ('first_name', 'phone_number', 'id')
+    list_display = ('first_name', 'phone_number', 'user', 'id')
     readonly_fields = (id,)
 
 admin.site.register(Contact, ContactAdmin)
