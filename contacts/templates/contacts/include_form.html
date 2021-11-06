@@ -1,5 +1,7 @@
-<form action="new/" method="post"> 
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button onclick="f()" type="submit">Add Contact</button>
-</form>
+{% if user.is_authenticated %}
+    <form action="new/" method="post"> 
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button onclick="f()" type="submit">Add Contact</button>
+    </form>
+{% endif %}

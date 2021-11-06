@@ -133,8 +133,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.session.SessionStorage'
 
 AUTH_USER_MODEL = 'email_and_uname_auth.CustomUser'
+LOGIN_URL = '/login'
 LOGIN_REDIRECT_URL = '/contacts'
-# LOGIN_REDIRECT_URL = 'registration:home'
 LOGOUT_REDIRECT_URL = '/login'
 
 AUTHENTICATION_BACKENDS = ['email_and_uname_auth.backends.EmailOrUsernameModelBackend']

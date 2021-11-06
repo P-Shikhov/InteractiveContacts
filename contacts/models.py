@@ -21,11 +21,11 @@ class Contact(models.Model):
     date_born = models.DateField(blank=True, validators=[validate_date_born])
     date_added = models.DateField(auto_now_add=True)
 
-    def save(self):
-        request = get_request()
-        # if request.user == self.user or request.user.is_superuser:
-        if request.user == self.user:
-            self.user = request.user
-            super().save()
-        else:
-            return
+    # def save(self):
+    #     request = get_request()
+    #     # if request.user == self.user or request.user.is_superuser:
+    #     if request.user == self.user:
+    #         self.user = request.user
+    #         super().save()
+    #     else:
+    #         return

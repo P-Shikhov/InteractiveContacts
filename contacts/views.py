@@ -1,4 +1,5 @@
-from django.urls.base import reverse
+from django.http.response import HttpResponse
+from django.urls.base import reverse, reverse_lazy
 from django.views import generic
 from django.http import HttpResponseRedirect, JsonResponse, Http404
 from django.shortcuts import get_object_or_404
@@ -18,7 +19,9 @@ from .models import Contact
 def process_contact_creation(request):
     form = ContactCreationForm(request.POST)
     if form.is_valid():
-        form.save()
+        contact = form.save(commit=False)
+        contact.user_id = request.user.id
+        contact.save()
         messages.success(request, 'Contact Created')
         return HttpResponseRedirect(reverse('contacts:contact_list'))
     else:
@@ -26,8 +29,10 @@ def process_contact_creation(request):
     return HttpResponseRedirect(reverse('contacts:contact_list'))
 
 
-class DashboardView(generic.ListView, FormMixin):
-# class DashboardView(LoginRequiredMixin, generic.ListView, FormMixin):
+def home(request):
+    return HttpResponse('200!')
+
+class DashboardView(LoginRequiredMixin, generic.ListView, FormMixin):
     model = Contact
     allow_empty = True
     context_object_name = 'contacts'
