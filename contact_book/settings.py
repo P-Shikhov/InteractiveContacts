@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    'contacts.middleware.RequestMiddleware'
+    # 'contacts.middleware.RequestMiddleware'
 ]
 
 ROOT_URLCONF = 'contact_book.urls'

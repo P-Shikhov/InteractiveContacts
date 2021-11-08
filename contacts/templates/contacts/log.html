@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Log{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    <ul>
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    </ul>
+{% endif %}
+
+{% include "contacts/include_log_form.html" with contact_id=contact_id %}
+
+{% if log %}
+    <ul>
+    {% for entry in log %}
+        {% comment %} <li><a id="{{ contact.id }}" onClick="showDetails(this.id)">{{ contact.first_name }}</a></li> {% endcomment %}
+        <li>{{ entry.date }} - {{ entry.action}} - {{ entry.result }} - {{ entry.comment }}</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    Log is empty. 
+{% endif %}
+
+{% endblock content %}

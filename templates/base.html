@@ -5,6 +5,15 @@
     <title>{% block title %}{% endblock title %}</title>
 </head>
 <body>
+    <nav>
+        {% if user.is_authenticated %}
+            <div>
+                {{ user }} | <a href="{% url 'logout' %}">Log out</a>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}">Sign in</a> | <a href="{% url 'registration:home' %}">Sign up</a>
+        {% endif %}
+    </nav>
     <main>
     {% block content %}
     {% endblock content %}

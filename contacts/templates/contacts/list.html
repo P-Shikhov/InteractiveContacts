@@ -19,7 +19,15 @@
 {% if contacts %}
     <ul>
     {% for contact in contacts %}
-        <li><a id="{{ contact.id }}" onClick="showDetails(this.id)">{{ contact.first_name }}</a></li>
+        <li>
+            <a 
+                id="{{ contact.id }}" 
+                onClick="showDetails(this.id)"
+            >
+                {{ contact.first_name }}
+            </a>
+            <a href="{{ contact.id }}/log">View Log</a>
+        </li>
     {% endfor %}
     </ul>
 {% else %}
@@ -32,7 +40,7 @@
     var currentContact;
   function showDetails(contactId){
     currentContactId = contactId;
-    fetch(`http://127.0.0.1:8081/contacts/${contactId}`, {
+    fetch(`http://127.0.0.1:8080/contacts/${contactId}`, {
         headers: {
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',

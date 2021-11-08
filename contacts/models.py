@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
+from django import forms
+from django.utils import timezone
 import datetime
 
 # from email_and_uname_auth.models import CustomUser
@@ -21,11 +23,27 @@ class Contact(models.Model):
     date_born = models.DateField(blank=True, validators=[validate_date_born])
     date_added = models.DateField(auto_now_add=True)
 
-    # def save(self):
-    #     request = get_request()
-    #     # if request.user == self.user or request.user.is_superuser:
-    #     if request.user == self.user:
-    #         self.user = request.user
-    #         super().save()
-    #     else:
-    #         return
+
+class LogEntry(models.Model):
+    class ActionType(models.TextChoices):
+        CALL = 'Call'
+        EMAIL = 'Email'
+        IM = 'IM'
+
+    class Result(models.TextChoices):
+        SUCCESS = 'Success'
+        FAILURE = 'Failure'
+
+    contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
+    date = models.DateTimeField(default=timezone.now())
+    action = models.CharField(
+        choices=ActionType.choices, 
+        max_length=5, 
+        default=ActionType.CALL
+    )
+    result = models.CharField(
+        choices=Result.choices, 
+        max_length=7, 
+        default=Result.SUCCESS
+    )
+    comment = models.TextField(max_length=150, blank=True)

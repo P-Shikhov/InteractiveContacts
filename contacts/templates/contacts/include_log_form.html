@@ -1,0 +1,7 @@
+{% if user.is_authenticated %}
+    <form method="post" action="log/new-entry"> 
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button onclick="f()" type="submit">Add Log entry</button>
+    </form>
+{% endif %}
