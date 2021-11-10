@@ -1,16 +1,16 @@
-from django.http.response import HttpResponse
-from django.urls.base import reverse, reverse_lazy
+from django.urls.base import reverse
 from django.views import generic
-from django.http import HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.forms.models import model_to_dict
-from django.views.decorators.http import require_http_methods, require_POST
+from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic.edit import FormMixin
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.http import require_POST
+from django.utils.translation import ugettext_lazy as _
+from django.shortcuts import redirect
 
 from .forms import ContactCreationForm, LogEntryCreationForm
 from .models import Contact, LogEntry
@@ -30,47 +30,25 @@ def process_contact_creation(request):
     return HttpResponseRedirect(reverse('contacts:contact_list'))
 
 
-def home(request):
-    return HttpResponse('200!')
-
-class DashboardView(LoginRequiredMixin, generic.ListView, FormMixin):
+class DashboardView(LoginRequiredMixin, generic.ListView):
     model = Contact
     allow_empty = True
     context_object_name = 'contacts'
     template_name = 'contacts/list.html'
-    form_class = ContactCreationForm
 
     def get_queryset(self):
         # what if non-int is passed
         return Contact.objects.filter(user_id=self.request.user.id)
 
-    def get(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        self.form = self.get_form(form_class)
-
-        self.object_list = self.get_queryset()
-        allow_empty = self.get_allow_empty()
-        if not allow_empty:
-            if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
-                is_empty = not self.object_list.exists()
-            else:
-                is_empty = not self.object_list
-            if is_empty:
-                raise Http404(_('Empty list and “%(class_name)s.allow_empty” is False.') % {
-                    'class_name': self.__class__.__name__,
-                })
-        context = self.get_context_data(object_list=self.object_list, form=self.form)
-        return self.render_to_response(context)
-
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        self.form = ContactCreationForm(context['prepopulated_form'])
-        return super(DashboardView, self).post(request, *args, **kwargs) 
+    def get_context_data(self, **kwargs):
+        context =  super().get_context_data(**kwargs)
+        context['form'] = ContactCreationForm()
+        return context
 
 
 @login_required
 @csrf_exempt #todo: csrf protection
-def contact_details(request, contact_id, **kwargs): #todo: id in url for POST
+def handle_contact_details_request(request, contact_id, **kwargs): #todo: id in url for POST
     if (request.method == 'GET'):
         contact = get_object_or_404(Contact, pk=contact_id)
         return JsonResponse(model_to_dict(contact))
@@ -91,49 +69,35 @@ def contact_details(request, contact_id, **kwargs): #todo: id in url for POST
         return HttpResponseRedirect(reverse("contacts:contact_list"))
 
 
-class LogView(generic.ListView, FormMixin):
+class LogView(LoginRequiredMixin, generic.ListView):
     model = LogEntry
     allow_empty = True
     context_object_name = 'log'
     template_name = 'contacts/log.html'
-    form_class = LogEntryCreationForm
 
-    def get_queryset(self, contact_id):
-        # what if non-int is passed
-        return LogEntry.objects.filter(contact_id=contact_id)
+    def get_queryset(self):
+        try:
+            contact = Contact.objects.get(id=self.kwargs['contact_id'])
+        except Contact.DoesNotExist:
+            messages.error(self.request, 'Contact {} is not available'.format(self.kwargs['contact_id']))
+            return None
+
+        if contact.user_id == self.request.user.id:
+            return LogEntry.objects.filter(contact_id=contact.id)
+        else:
+            messages.error(self.request, 'Contact {} is not available'.format(self.kwargs['contact_id']))
+            return None
+
+    def render_to_response(self, context):
+        if self.object_list is None:
+            return redirect('contacts:contact_list')
+        return super().render_to_response(context)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['contact_id'] = self.kwargs['contact_id']
+        context['form'] = LogEntryCreationForm()
         return context
 
-    def get(self, request, contact_id, *args, **kwargs):
-        session_user = self.request.user
-        if session_user.is_authenticated:
-            contact_id_from_url = self.kwargs['contact_id']
-            contact = get_object_or_404(Contact, pk=contact_id_from_url)
-            if contact.user_id == session_user.id:
-                form_class = self.get_form_class()
-                self.form = self.get_form(form_class)
-                self.object_list = self.get_queryset(contact_id_from_url)
-                allow_empty = self.get_allow_empty()
-                if not allow_empty:
-                    if self.get_paginate_by(self.object_list) is not None and hasattr(self.object_list, 'exists'):
-                        is_empty = not self.object_list.exists()
-                    else:
-                        is_empty = not self.object_list
-                    if is_empty:
-                        raise Http404(_('Empty list and “%(class_name)s.allow_empty” is False.') % {
-                            'class_name': self.__class__.__name__,
-                        })
-                context = self.get_context_data(object_list=self.object_list, form=self.form)
-                return self.render_to_response(context)
-        return HttpResponseRedirect(reverse("contacts:contact_list"))
-
-    def post(self, request, *args, **kwargs):
-        context = self.get_context_data(**kwargs)
-        self.form = LogEntryCreationForm(context['prepopulated_form'])
-        return super(LogView, self).post(request, *args, **kwargs)
 
 @require_POST
 def create_log_entry(request, contact_id):

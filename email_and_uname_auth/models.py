@@ -19,7 +19,6 @@ class CustomUserManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
-
     
 
     def create_superuser(self, email, username, password, **other_fields):
@@ -44,8 +43,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(max_length=20, blank=False)
     email = models.EmailField(_('email address'), unique=True)
     username = models.CharField(_('username'), max_length=30, unique=True,
-        help_text=_('Required. 30 characters or fewer. Letters, digits and '
-                    '@/./+/-/_ only.'),
+        help_text=_('Required. 30 characters or fewer. Letters, digits and - only.'),
         validators=[
             RegexValidator(r'^[\w-]{5,30}$',
                                       _('Enter a valid username. '
@@ -62,5 +60,3 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['first_name', 'last_name', 'username']
-
-

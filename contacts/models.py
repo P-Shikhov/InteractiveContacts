@@ -7,7 +7,6 @@ import datetime
 
 # from email_and_uname_auth.models import CustomUser
 from contact_book import settings
-from .middleware import get_request
 
 def validate_date_born(date_born):
     if date_born > datetime.date.today(): 
@@ -17,7 +16,7 @@ class Contact(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20, blank=True)
-    phone_regex = RegexValidator(regex=r'^\+?\d{5,15}$', message="Phone number must include 5 to 15 digits.")
+    phone_regex = RegexValidator(regex=r'^\+?\d{3,15}$', message="Phone number must include 5 to 15 digits.")
     phone_number = models.CharField(validators=[phone_regex], max_length=16)
     email = models.EmailField(blank=True)
     date_born = models.DateField(blank=True, validators=[validate_date_born])
